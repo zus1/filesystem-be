@@ -3,3 +3,4 @@ venv
 .venv
 app.log
 .env
+**/__pycache__/

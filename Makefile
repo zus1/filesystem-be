@@ -46,16 +46,4 @@ requirements:
 	python3 -m pip install -r requirements.txt #install locally
 
 test:
-	@if [ ${app} ] && [ ${class} ] && [ ${method} ]; then \
-      	echo "Testing: App: ${app}, Class: ${class} and Method ${method}"; \
-      	docker compose exec web ./venv/bin/python3 manage.py test ${app}.tests.${class}.${method} --settings=licenselinkup.settings.testing -v2; \
-    elif [ ${app} ] && [ ${class} ]; then \
-      	echo "Testing: App: ${app}, Class: ${class}"; \
-      	docker compose exec web ./venv/bin/python3 manage.py test ${app}.tests.${class} --settings=licenselinkup.settings.testing -v2; \
-    elif [ ${app} ]; then \
-      	echo "Testing: App: ${app}"; \
-      	docker compose exec web ./venv/bin/python3 manage.py test ${app}.tests --settings=licenselinkup.settings.testing -v2; \
-    else \
-      	echo "Testing: Running all tests"; \
-      	docker compose exec web ./venv/bin/python3 manage.py test --settings=licenselinkup.settings.testing -v2; \
-    fi
+	docker compose exec web ./venv/bin/python3 manage.py test filesystem.tests --settings=skeleton.settings.testing
