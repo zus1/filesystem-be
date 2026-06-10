@@ -32,14 +32,17 @@ def sync_filesystem_on_create(sender, instance: Node, **kwargs):
 
 @receiver(post_delete, sender=Node)
 def sync_filesystem_on_delete(sender, instance: Node, **kwargs):
-    path = f'{_create_root_path_for_node(instance)}{instance.original_name}'
+    path = _create_root_path_for_node(instance)
 
     if path == settings.FILE_SYSTEM_ROOT+'/':
         # Protect from deleting root
         return
 
     if os.path.exists(path):
-        shutil.rmtree(path) # Delete the entire structure. This will basically delete recursively (mimic sudo rm -r)
+        if instance.type == NodeTypes.FILE:
+            os.remove(path)
+        else:
+            shutil.rmtree(path)
 
 def _create_root_path_for_node(instance: Node)->str:
     root = settings.FILE_SYSTEM_ROOT
