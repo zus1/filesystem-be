@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
 from filesystem.models import Node, NodeTypes
@@ -30,7 +30,7 @@ def sync_filesystem_on_create(sender, instance: Node, **kwargs):
         _touch(path)
 
 
-@receiver(post_delete, sender=Node)
+@receiver(pre_delete, sender=Node)
 def sync_filesystem_on_delete(sender, instance: Node, **kwargs):
     path = _create_root_path_for_node(instance)
 
@@ -42,7 +42,7 @@ def sync_filesystem_on_delete(sender, instance: Node, **kwargs):
         if instance.type == NodeTypes.FILE:
             os.remove(path)
         else:
-            shutil.rmtree(path)
+            shutil.rmtree(path)  # recursive — handles entire subtree
 
 def _create_root_path_for_node(instance: Node)->str:
     root = settings.FILE_SYSTEM_ROOT
