@@ -1,6 +1,7 @@
-from rest_framework.exceptions import ValidationError
+from rest_framework import status
+from rest_framework.exceptions import APIException
 
 
-class NotVerboseValidationError(ValidationError):
-    def __str__(self):
-        return self.detail[0]
+class BadRequestApiException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = 'bad_request'
