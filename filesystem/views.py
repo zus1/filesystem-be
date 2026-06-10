@@ -1,33 +1,24 @@
 from django.http import JsonResponse
 from django_mysql.models import QuerySet
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, inline_serializer
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, inline_serializer, \
+    OpenApiResponse
 from rest_framework import viewsets, generics, status, serializers
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from filesystem.models import Node, NodeTypes
 from filesystem.serializers import NodeCreateSerializer, NodeSerializer, NodeListSerializer
+from filesystem import docs
 
 
-@extend_schema_view(
-    create=extend_schema(
-        request=NodeCreateSerializer,
-        responses={200: NodeCreateSerializer, 400: str},
-    ),
-    retrieve=extend_schema(
-        parameters=[OpenApiParameter(
-            name="pk",
-            type=OpenApiTypes.INT,
-            location=OpenApiParameter.PATH,
-        )],
-        description="The retrieve action returns a single object selected by `id`."
-    )
-)
+@extend_schema_view(**docs.NODE_VIEW_SET)
 class NodesViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
+    lookup_field = 'id'
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -38,11 +29,18 @@ class NodesViewSet(viewsets.ModelViewSet):
         return None
 
     def get_queryset(self)->QuerySet:
-        return Node.objects.filter(id=self.kwargs['pk'])
+        return Node.objects.filter(id=self.kwargs[self.lookup_field])
+
 
     @action(detail=False, methods=['post'])
-    def perform_create(self, serializer):
-        serializer.save()
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        response_serializer = NodeSerializer(instance=serializer.instance)
+
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['delete'])
     def perform_destroy(self, instance: Node):
@@ -54,6 +52,7 @@ class NodesViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 
+@extend_schema(**docs.NODE_LIST_VIEW)
 class NodeListView(generics.ListAPIView):
     model = Node
     permission_classes = (AllowAny,)
@@ -75,17 +74,7 @@ class NodeListView(generics.ListAPIView):
 class BulkDeleteView(APIView):
     permission_classes = (AllowAny,)
 
-    @extend_schema(
-        request=inline_serializer(
-            name="BulkDeleteNodesRequest",
-            fields={
-                "ids": serializers.ListField(),
-            },
-        ),
-        responses={
-            207: None,
-        },
-    )
+    @extend_schema(**docs.BULK_DELETE_VIEW)
     def post(self, request)->JsonResponse:
         ids = request.data.get('ids', None)
 

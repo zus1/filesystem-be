@@ -17,7 +17,7 @@ urlpatterns = [
         name="nodes-view-set-create",
     ),
     path(
-        'nodes/<int:pk>/',
+        'nodes/<int:id>/',
          views.NodesViewSet.as_view(
              {
                  "get": "retrieve",
