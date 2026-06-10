@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.admin import AdminSite
 from django.urls import path, include
 
-from skeleton import settings
+from django.conf import settings
 
 #admin.site.__class__ = AdminSite
 

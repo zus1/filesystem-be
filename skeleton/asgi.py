@@ -14,7 +14,7 @@ from .routing import ws_urlpatterns
 
 django_asgi_app = get_asgi_application()
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'skeleton.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'skeleton.settings.local')
 
 application = ProtocolTypeRouter({
     'http': django_asgi_app,
