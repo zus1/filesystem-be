@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
-from celery.schedules import crontab
-
 import core
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,15 +29,10 @@ DEBUG = True
 APPEND_SLASH = False
 
 ALLOWED_HOSTS = []
-FRONTEND_URL = os.environ.get('FRONTEND_URL')
-
-AUTH_USER_MODEL='users.User'
-
 
 # Application definition
 
 INSTALLED_APPS = [
-    'users',
     'core',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,23 +40,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_celery_beat',
-    'django_redis',
-    'django_celery_results',
     'drf_spectacular',
     'django_filters',
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'core.authentication.ApiAuthentication'
-    ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'core.authentication.ApiAuthentication'
+    # ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Django skeleton',
-    'DESCRIPTION': 'Replace with real project description',
+    'TITLE': 'Filesystem API',
+    'DESCRIPTION': 'REST API for file system management',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     #more settings at https://drf-spectacular.readthedocs.io/en/latest/settings.html
@@ -77,7 +67,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'users.middleware.ApiAuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'skeleton.urls'
@@ -117,15 +106,15 @@ DATABASES = {
     },
 }
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.environ.get('REDIS_URL'),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
-}
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": os.environ.get('REDIS_URL'),
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     }
+# }
 
 LOGGING = {
     "version": 1,
@@ -138,11 +127,6 @@ LOGGING = {
         },
     },
     "loggers": {
-        "email": {
-            "handlers": ["file"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
         "system": {
             "handlers": ["file"],
             "level": "DEBUG",
@@ -157,7 +141,7 @@ FILE_UPLOAD_HANDLERS = [
 
 STORAGES = {
     "default": {
-        "BACKEND": "core.aws.S3Storage",
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
@@ -180,15 +164,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-    {
-        'NAME': 'core.validators.PasswordContainsUpperCaseValidator',
-    },
-    {
-        'NAME': 'core.validators.PasswordContainsSpecialCharValidator',
-    },
-    {
-        'NAME': 'core.validators.PasswordContainsNumericValidator',
     },
 ]
 
@@ -215,37 +190,3 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CELERY_BROKER_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
-
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
-
-CELERY_BEAT_SCHEDULE = {
-    # 'example_scheduled_task': {
-    #     'task': 'module.tasks.shared_task_callback',
-    #     'schedule': crontab()
-    # }
-}
-
-AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-AWS_REGION = os.environ.get('AWS_REGION')
-AWS_S3_BUCKET = os.environ.get('AWS_S3_BUCKET')
-AWS_S3_VERSION = os.environ.get('AWS_S3_VERSION')
-AWS_S3_LINK= os.environ.get('AWS_S3_LINK')
-AWS_S3_SIGNATURE_TTL = os.environ.get('AWS_S3_SIGNATURE_TTL')
-
-SENDGRID_KEY = os.getenv('SENDGRID_KEY')
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_PORT = os.environ.get('EMAIL_PORT')
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD =os.environ.get('EMAIL_HOST_PASSWORD')
-EMAIL_SANDBOX = bool(os.environ.get('EMAIL_SANDBOX', False))
-EMAIL_FROM_ADDRESS = os.environ.get('EMAIL_FROM_ADDRESS', 'fake@fake.com')
-EMAIL_NO_REPLY_ADDRESS = os.environ.get('EMAIL_NO_REPLY_ADDRESS', 'no-reply@fake.com')
-
-REDIRECT_PATH_VERIFY = os.environ.get('REDIRECT_PATH_VERIFY')
-REDIRECT_PATH_RESET_PASSWORD = os.environ.get('REDIRECT_PATH_RESET_PASSWORD')
-REDIRECT_PATH_MAGIC_LINK = os.environ.get('REDIRECT_PATH_MAGIC_LINK')

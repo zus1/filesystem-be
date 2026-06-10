@@ -28,8 +28,9 @@ COPY --chown=appuser:appuser . .
 
 # Copy and set entrypoint
 USER root
-#COPY .docker/wait-for-it.sh /usr/local/bin/wait-for-it
-#RUN chmod +x /usr/local/bin/wait-for-it
 COPY .docker/entrypoint.sh /home/appuser/app/entrypoint.sh
 RUN chmod +x /home/appuser/app/entrypoint.sh && chown appuser:appuser /home/appuser/app/entrypoint.sh
+
+EXPOSE 8000
+
 USER appuser

@@ -1,7 +1,5 @@
 celery==5.4.0
 Django==5.2.9
-django-celery-beat==2.8.0
-django-celery-results==2.6.0
 channels==4.3.2
 daphne==4.2.1
 django-crispy-forms==2.3
@@ -9,17 +7,15 @@ django-environ==0.11.2
 django-extensions==4.1
 django-mysql==4.19.0
 djangorestframework==3.15.2
+django-cors-headers==4.9.0
+django-filter==25.2
 mysqlclient==2.2.7
-numpy==2.2.6
-pandas==2.3.3
 PyMySQL==1.1.2
 pytest==8.3.2
 pytest-django==4.9.0
 python-dateutil==2.9.0
 python-dotenv==1.0.1
 pytz==2025.2
-redis==5.2.1
-sendgrid==6.12.5
 sentry-sdk==2.49.0
 sqlparse==0.5.5
 timezonefinder==8.2.0
@@ -27,8 +23,5 @@ uvicorn==0.40.0
 gunicorn==23.0.0
 whitenoise==6.11.0
 django-db-connection-pool==1.2.6
-django-redis==6.0.0
-boto3==1.42.24
-pillow==12.1.0
 drf-spectacular==0.29.0
-django-filter==25.2
+drf-standardized-errors>=0.15.0

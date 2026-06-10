@@ -4,53 +4,15 @@ services:
       context: .
       dockerfile: .docker/Dockerfile
     ports:
-      - "8010:8000"
+      - "${FORWARD_WEB_PORT:-8100}:8000"
     env_file:
       - .env
     depends_on:
       - db
-      - redis
     volumes:
       - .:/home/appuser/app
-      - django-skeleton-venv:/home/appuser/app/venv
+      - filesystem-venv:/home/appuser/app/venv
     command: /bin/bash ./.docker/entrypoint.sh
-
-  celery:
-    build:
-      context: .
-      dockerfile: .docker/Dockerfile
-    command: >
-      sh -c "./venv/bin/celery -A skeleton worker --loglevel=info"
-    env_file:
-      - .env
-    volumes:
-      - .:/home/appuser/app
-      - django-skeleton-venv:/home/appuser/app/venv
-    depends_on:
-      - web
-      - redis
-
-  beat:
-    build:
-      context: .
-      dockerfile: .docker/Dockerfile
-    command: /bin/bash ./.docker/celery/beat/entrypoint.sh
-    env_file:
-      - .env
-    volumes:
-      - .:/home/appuser/app
-      - django-skeleton-venv:/home/appuser/app/venv
-    depends_on:
-      - web
-      - redis
-      - db
-
-  redis:
-    image: redis:7
-    ports:
-      - '${FORWARD_REDIS_PORT:-6379}:6379'
-    volumes:
-      - skeleton-redis:/data
 
   db:
     image: mysql:8.0
@@ -64,7 +26,7 @@ services:
     ports:
       - "${FORWARD_DB_PORT:-3308}:3306"
     volumes:
-      - skeleton-db:/var/lib/mysql
+      - filesystem-db:/var/lib/mysql
       - ./.docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
@@ -72,16 +34,8 @@ services:
       timeout: 5s
       retries: 5
 
-  mail:
-    image: tophfr/mailcatcher
-    ports:
-      - '1080:80'
-
-
 volumes:
-    skeleton-db:
+    filesystem-db:
         driver: local
-    skeleton-redis:
-        driver: local
-    django-skeleton-venv:
+    filesystem-venv:
         driver: local
