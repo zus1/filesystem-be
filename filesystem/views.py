@@ -1,10 +1,12 @@
+from django.http import JsonResponse
 from django_mysql.models import QuerySet
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
-from rest_framework import viewsets, generics
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, inline_serializer
+from rest_framework import viewsets, generics, status, serializers
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException
 from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
 
 from filesystem.models import Node, NodeTypes
 from filesystem.serializers import NodeCreateSerializer, NodeSerializer, NodeListSerializer
@@ -69,4 +71,28 @@ class NodeListView(generics.ListAPIView):
             qs = qs.filter(original_name__startswith=search)
 
         return qs.all()
+
+class BulkDeleteView(APIView):
+    permission_classes = (AllowAny,)
+
+    @extend_schema(
+        request=inline_serializer(
+            name="BulkDeleteNodesRequest",
+            fields={
+                "ids": serializers.ListField(),
+            },
+        ),
+        responses={
+            207: None,
+        },
+    )
+    def post(self, request)->JsonResponse:
+        ids = request.data.get('ids', None)
+
+        if not ids:
+            raise APIException(detail='You have to provide some ids.', code=status.HTTP_400_BAD_REQUEST)
+
+        Node.objects.filter(id__in=ids).delete()
+
+        return JsonResponse({}, status=status.HTTP_207_MULTI_STATUS)
 

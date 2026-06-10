@@ -27,4 +27,5 @@ urlpatterns = [
         name="nodes-view-set-detail",
     ),
     path('nodes/list/', views.NodeListView.as_view(), name="node-list"),
+    path('nodes/bulk-delete/', views.BulkDeleteView.as_view(), name="node-bulk-delete"),
 ]
