@@ -80,7 +80,7 @@ With the default `.env` values this becomes:
 
 ```bash
 docker compose exec db mysql -u root -proot \
-  -e "GRANT ALL PRIVILEGES ON \`test_django_skeleton\`.* TO 'skeleton_user'@'%'; FLUSH PRIVILEGES;"
+  -e "GRANT ALL PRIVILEGES ON \`test_filesystem\`.* TO 'skeleton_user'@'%'; FLUSH PRIVILEGES;"
 ```
 
 Then run the test suite:
