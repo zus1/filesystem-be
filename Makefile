@@ -6,8 +6,6 @@ down:
 	docker ps -a
 
 init:
-	echo "Execution copy .env.example to .env..."
-	cp .env.dist .env
 	echo "Booting up containers"
 	docker compose up -d
 	echo "Waiting for containers to finish booting..."
