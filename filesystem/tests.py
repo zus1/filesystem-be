@@ -305,6 +305,32 @@ class NodeListViewTests(BaseNodeTest):
         response = self.client.get(self.url, {'parent': parent.id, 'search': 'do'})
         self.assertEqual(response.data['count'], 2)
 
+    def test_list_filter_by_parent_minus1_returns_root_nodes(self):
+        root1 = self._make_folder('documents')
+        root2 = self._make_folder('photos')
+        self._make_folder('reports', parent=root1)
+        response = self.client.get(self.url, {'parent': -1})
+        self.assertEqual(response.data['count'], 2)
+        result_ids = {item['id'] for item in response.data['results']}
+        self.assertIn(root1.id, result_ids)
+        self.assertIn(root2.id, result_ids)
+
+    def test_list_filter_by_parent_minus1_excludes_nested_nodes(self):
+        root = self._make_folder('documents')
+        nested = self._make_folder('reports', parent=root)
+        response = self.client.get(self.url, {'parent': -1})
+        result_ids = {item['id'] for item in response.data['results']}
+        self.assertIn(root.id, result_ids)
+        self.assertNotIn(nested.id, result_ids)
+
+    def test_list_filter_by_parent_minus1_with_search(self):
+        self._make_folder('documents')
+        self._make_folder('downloads')
+        self._make_folder('photos')
+        self._make_folder('nested_doc', parent=self._make_folder('root'))
+        response = self.client.get(self.url, {'parent': -1, 'search': 'do'})
+        self.assertEqual(response.data['count'], 2)
+
     def test_list_returns_empty_for_unknown_parent(self):
         self._make_folder('documents')
         response = self.client.get(self.url, {'parent': 99999})

@@ -62,9 +62,12 @@ class NodeListView(generics.ListAPIView):
         search = self.request.query_params.get('search', None)
 
         qs = Node.objects
-
-        if parent:
+        # Value -1 will be sent for listing contents of root directory, which are nodes without parent
+        if parent and int(parent) == -1:
+            qs = qs.filter(parent__isnull=True)
+        elif parent:
             qs = qs.filter(parent=parent)
+
         if search:
             qs = qs.filter(original_name__startswith=search)
 
