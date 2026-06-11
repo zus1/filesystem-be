@@ -77,6 +77,11 @@ class BulkDeleteView(APIView):
     permission_classes = (AllowAny,)
 
     @extend_schema(**docs.BULK_DELETE_VIEW)
+    # Why post here? Cleanest way would be to use delete with body, which is not explicitly forbidden by RFC,
+    # but it is not a common practice and a lot of system do not support DELETE request with body
+    # Another way is to add ids to query string, but downside here if there is a lot of resources to delete
+    # query string could get to long
+    # It comes down to PATCH vs POST, and I decided to go with POST, with appropriate 207 http response
     def post(self, request)->JsonResponse:
         ids = request.data.get('ids', None)
 
