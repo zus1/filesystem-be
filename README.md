@@ -25,7 +25,6 @@ make init
 ```
 
 This will:
-- Copy `.env.dist` to `.env` (if not already done)
 - Start all containers in detached mode
 - Wait for the database to become ready
 - Run `makemigrations` and `migrate`

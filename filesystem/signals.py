@@ -45,10 +45,19 @@ def sync_filesystem_on_delete(sender, instance: Node, **kwargs):
             shutil.rmtree(path)  # recursive — handles entire subtree
 
 def _create_root_path_for_node(instance: Node)->str:
-    root = settings.FILE_SYSTEM_ROOT
+    root = _ensure_root_is_created()
     node_chain = NodeRepository().find_node_parent_chain(node=instance)
 
     return f'{root}/{node_chain}'
+
+def _ensure_root_is_created():
+    root = settings.FILE_SYSTEM_ROOT
+
+    if not os.path.exists(root):
+        os.mkdir(root)
+        os.chmod(root, 0o755)
+
+    return root
 
 def _touch(path):
     with open(path, 'a'):
