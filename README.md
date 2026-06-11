@@ -116,3 +116,7 @@ make startapp app=<app_name>
 | `FORWARD_WEB_PORT` | Host port mapped to the web container | `8100` |
 | `FORWARD_DB_PORT` | Host port mapped to MySQL | `3308` |
 | `DEBUG` | Django debug mode | `true` |
+
+## Documentation
+Api documentation can be accessed at following url
+http://localhost:8100/api/docs#/
