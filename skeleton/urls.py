@@ -1,12 +1,10 @@
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.admin import AdminSite
 from django.urls import path, include
 
 from django.conf import settings
 
-#admin.site.__class__ = AdminSite
 
 urlpatterns = [
     path('admin/', admin.site.urls),

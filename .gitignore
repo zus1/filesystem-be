@@ -5,3 +5,4 @@ app.log
 .env
 **/__pycache__/
 root
+static
