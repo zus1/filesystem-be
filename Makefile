@@ -12,7 +12,7 @@ init:
 	sleep 15
 	docker compose exec web ./venv/bin/python3 manage.py makemigrations
 	docker compose exec web ./venv/bin/python3 manage.py migrate --noinput
-	#docker compose exec web ./venv/bin/python3 manage.py collectstatic
+	docker compose exec web ./venv/bin/python3 manage.py collectstatic
 	echo "Create super user"
 	docker compose exec web ./venv/bin/python3 manage.py createsuperuser
 
